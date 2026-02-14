@@ -1,42 +1,42 @@
-import type { Tanka } from "../data/tanka";
+import type { UserProfile } from "../types";
 import "./MatchList.css";
 
 interface MatchListProps {
-  matches: Tanka[];
-  onBack: () => void;
+  matches: UserProfile[];
 }
 
-export function MatchList({ matches, onBack }: MatchListProps) {
+export function MatchList({ matches }: MatchListProps) {
+  if (matches.length === 0) {
+    return (
+      <div className="match-list">
+        <p className="match-empty">
+          まだLIKEした相手がいません。
+          <br />
+          気になる歌人に LIKE を送りましょう。
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="match-list">
-      <div className="match-header">
-        <button className="btn-back" onClick={onBack}>
-          &larr; 戻る
-        </button>
-        <h2>お気に入りの歌 ({matches.length})</h2>
-      </div>
-      {matches.length === 0 ? (
-        <p className="match-empty">
-          まだお気に入りの歌がありません。
-          <br />
-          気になる歌に ♥ を押してみましょう。
-        </p>
-      ) : (
-        <ul className="match-items">
-          {matches.map((tanka) => (
-            <li key={tanka.id} className="match-item">
-              <div className="match-poem">
-                <span className="match-kami">{tanka.kami.replace(/\n/g, " ")}</span>
-                <span className="match-shimo">{tanka.shimo.replace(/\n/g, " ")}</span>
-              </div>
-              <div className="match-meta">
-                <span className="match-author">{tanka.author}</span>
-                <span className="match-theme-badge">{tanka.theme}</span>
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
+      <ul className="match-items">
+        {matches.map((u) => (
+          <li key={u.id} className="match-item">
+            <div className="match-item-header">
+              <span className="match-name">{u.displayName}</span>
+              <span className="match-meta">
+                {u.age}歳 / {u.region}
+              </span>
+            </div>
+            <p className="match-bio">{u.bio}</p>
+            <div className="match-poems">
+              <p className="match-poem">{u.tanka1}</p>
+              {u.tanka2 && <p className="match-poem poem2">{u.tanka2}</p>}
+            </div>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
