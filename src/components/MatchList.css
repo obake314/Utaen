@@ -4,7 +4,7 @@
 
 .match-empty {
   text-align: center;
-  color: rgba(255, 255, 255, 0.4);
+  color: #999;
   line-height: 2;
   margin-top: 3rem;
 }
@@ -19,10 +19,11 @@
 }
 
 .match-item {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #fff;
+  border: 1px solid #e5e5e5;
   border-radius: 14px;
   padding: 1.2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .match-item-header {
@@ -33,18 +34,18 @@
 }
 
 .match-name {
-  color: #e8d5f5;
+  color: #333;
   font-size: 1rem;
   font-weight: 600;
 }
 
 .match-meta {
-  color: rgba(255, 255, 255, 0.35);
+  color: #aaa;
   font-size: 0.75rem;
 }
 
 .match-bio {
-  color: rgba(255, 255, 255, 0.45);
+  color: #888;
   font-size: 0.8rem;
   margin: 0 0 0.75rem 0;
 }
@@ -54,7 +55,7 @@
   flex-direction: column;
   gap: 0.5rem;
   padding: 0.75rem;
-  background: rgba(255, 255, 255, 0.03);
+  background: #f8f6fc;
   border-radius: 8px;
 }
 
@@ -62,9 +63,9 @@
   margin: 0;
   font-size: 0.9rem;
   line-height: 1.7;
-  color: #e8d5f5;
+  color: #4a3860;
 }
 
 .match-poem.poem2 {
-  color: #f0c0c0;
+  color: #8b6a6a;
 }

@@ -18,14 +18,14 @@
 .app-title {
   font-size: 2.2rem;
   margin: 0;
-  background: linear-gradient(135deg, #c9a0dc, #f0c0c0);
+  background: linear-gradient(135deg, #8b5cf6, #d97896);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .app-subtitle {
-  color: rgba(255, 255, 255, 0.4);
+  color: #999;
   font-size: 0.8rem;
   margin: 0.2rem 0 0 0;
 }
@@ -37,7 +37,7 @@
   width: 100%;
   max-width: 480px;
   margin-bottom: 1rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid #e5e5e5;
 }
 
 .nav-btn {
@@ -45,7 +45,7 @@
   background: none;
   border: none;
   border-bottom: 2px solid transparent;
-  color: rgba(255, 255, 255, 0.4);
+  color: #999;
   padding: 0.6rem 0;
   font-size: 0.85rem;
   font-family: inherit;
@@ -54,12 +54,12 @@
 }
 
 .nav-btn:hover {
-  color: rgba(255, 255, 255, 0.6);
+  color: #666;
 }
 
 .nav-btn.active {
-  color: #c9a0dc;
-  border-bottom-color: #c9a0dc;
+  color: #8b5cf6;
+  border-bottom-color: #8b5cf6;
 }
 
 /* match status bar */
@@ -72,20 +72,21 @@
 }
 
 .status-text {
-  color: rgba(255, 255, 255, 0.45);
+  color: #999;
   font-size: 0.8rem;
 }
 
 .status-likes {
-  color: #64ff96;
+  color: #e74c8b;
   font-size: 0.8rem;
+  font-weight: 600;
   margin-left: auto;
 }
 
 .btn-filter-toggle {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: rgba(255, 255, 255, 0.5);
+  background: #f0f0f0;
+  border: 1px solid #ddd;
+  color: #666;
   padding: 0.3rem 0.6rem;
   border-radius: 6px;
   font-size: 0.75rem;
@@ -95,8 +96,8 @@
 }
 
 .btn-filter-toggle:hover {
-  background: rgba(255, 255, 255, 0.12);
-  color: rgba(255, 255, 255, 0.7);
+  background: #e8e8e8;
+  color: #333;
 }
 
 /* main */
@@ -117,12 +118,12 @@
 
 .finished-message {
   font-size: 1.3rem;
-  color: #e8d5f5;
+  color: #333;
   margin: 0 0 0.5rem 0;
 }
 
 .finished-count {
-  color: rgba(255, 255, 255, 0.5);
+  color: #888;
   margin: 0;
 }
 
@@ -130,7 +131,7 @@
 .btn-link {
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.4);
+  color: #8b5cf6;
   font-size: 0.85rem;
   font-family: inherit;
   cursor: pointer;
@@ -139,5 +140,5 @@
 }
 
 .btn-link:hover {
-  color: rgba(255, 255, 255, 0.6);
+  color: #7c3aed;
 }
