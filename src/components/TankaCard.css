@@ -1,13 +1,13 @@
 .tanka-card {
-  background: linear-gradient(135deg, #2d1b3d 0%, #1a1a2e 100%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #fff;
+  border: 1px solid #e5e5e5;
   border-radius: 20px;
   padding: 1.5rem;
   width: 340px;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
   transition: transform 0.28s ease, opacity 0.28s ease;
 }
 
@@ -33,17 +33,17 @@
 
 .card-name {
   font-size: 1.2rem;
-  color: #e8d5f5;
+  color: #333;
   font-weight: 600;
 }
 
 .card-meta {
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: #aaa;
 }
 
 .card-bio {
-  color: rgba(255, 255, 255, 0.55);
+  color: #777;
   font-size: 0.85rem;
   margin: 0;
   line-height: 1.6;
@@ -55,7 +55,7 @@
   flex-direction: column;
   gap: 0.75rem;
   padding: 1rem;
-  background: rgba(255, 255, 255, 0.03);
+  background: #f8f6fc;
   border-radius: 12px;
 }
 
@@ -63,11 +63,11 @@
   margin: 0;
   font-size: 1rem;
   line-height: 1.9;
-  color: #e8d5f5;
+  color: #4a3860;
 }
 
 .poem-second {
-  color: #f0c0c0;
+  color: #8b6a6a;
 }
 
 /* actions */
@@ -106,29 +106,29 @@
 }
 
 .btn-unlike {
-  border-color: rgba(255, 100, 100, 0.4);
-  color: #ff6464;
+  border-color: #fcc;
+  color: #e55;
 }
 .btn-unlike:hover {
-  background: rgba(255, 100, 100, 0.12);
+  background: #fff0f0;
   transform: scale(1.08);
 }
 
 .btn-pending {
-  border-color: rgba(255, 200, 60, 0.4);
-  color: #ffc83c;
+  border-color: #fde68a;
+  color: #d97706;
 }
 .btn-pending:hover {
-  background: rgba(255, 200, 60, 0.12);
+  background: #fffbeb;
   transform: scale(1.08);
 }
 
 .btn-like {
-  border-color: rgba(100, 255, 150, 0.4);
-  color: #64ff96;
+  border-color: #bbf7d0;
+  color: #16a34a;
 }
 .btn-like:hover:not(:disabled) {
-  background: rgba(100, 255, 150, 0.12);
+  background: #f0fdf4;
   transform: scale(1.08);
 }
 .btn-like:disabled {

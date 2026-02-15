@@ -3,6 +3,7 @@ import type { UserProfile } from "../types";
 export const sampleUsers: UserProfile[] = [
   {
     id: "u1",
+    email: "kagetsu@example.com",
     displayName: "花月",
     age: 28,
     region: "関東",
@@ -12,6 +13,7 @@ export const sampleUsers: UserProfile[] = [
   },
   {
     id: "u2",
+    email: "yamabiko@example.com",
     displayName: "山彦",
     age: 35,
     region: "近畿",
@@ -21,6 +23,7 @@ export const sampleUsers: UserProfile[] = [
   },
   {
     id: "u3",
+    email: "yukiusagi@example.com",
     displayName: "雪兎",
     age: 24,
     region: "北海道",
@@ -30,6 +33,7 @@ export const sampleUsers: UserProfile[] = [
   },
   {
     id: "u4",
+    email: "shiokaze@example.com",
     displayName: "潮風",
     age: 31,
     region: "九州・沖縄",
@@ -39,6 +43,7 @@ export const sampleUsers: UserProfile[] = [
   },
   {
     id: "u5",
+    email: "momiji@example.com",
     displayName: "紅葉",
     age: 27,
     region: "東北",
@@ -48,6 +53,7 @@ export const sampleUsers: UserProfile[] = [
   },
   {
     id: "u6",
+    email: "tsukiyo@example.com",
     displayName: "月夜",
     age: 42,
     region: "中部",
@@ -57,6 +63,7 @@ export const sampleUsers: UserProfile[] = [
   },
   {
     id: "u7",
+    email: "furin@example.com",
     displayName: "風鈴",
     age: 23,
     region: "関東",
@@ -66,6 +73,7 @@ export const sampleUsers: UserProfile[] = [
   },
   {
     id: "u8",
+    email: "seiryu@example.com",
     displayName: "清流",
     age: 38,
     region: "四国",
@@ -75,6 +83,7 @@ export const sampleUsers: UserProfile[] = [
   },
   {
     id: "u9",
+    email: "oborogumo@example.com",
     displayName: "朧雲",
     age: 29,
     region: "近畿",
@@ -84,6 +93,7 @@ export const sampleUsers: UserProfile[] = [
   },
   {
     id: "u10",
+    email: "kasumiso@example.com",
     displayName: "霞草",
     age: 26,
     region: "中国",
@@ -93,6 +103,7 @@ export const sampleUsers: UserProfile[] = [
   },
   {
     id: "u11",
+    email: "usurai@example.com",
     displayName: "薄氷",
     age: 33,
     region: "北海道",
@@ -102,6 +113,7 @@ export const sampleUsers: UserProfile[] = [
   },
   {
     id: "u12",
+    email: "yunagi@example.com",
     displayName: "夕凪",
     age: 30,
     region: "九州・沖縄",
@@ -111,6 +123,7 @@ export const sampleUsers: UserProfile[] = [
   },
   {
     id: "u13",
+    email: "harukaze@example.com",
     displayName: "春風",
     age: 25,
     region: "関東",
@@ -120,6 +133,7 @@ export const sampleUsers: UserProfile[] = [
   },
   {
     id: "u14",
+    email: "hoshizuna@example.com",
     displayName: "星砂",
     age: 36,
     region: "九州・沖縄",
@@ -129,6 +143,7 @@ export const sampleUsers: UserProfile[] = [
   },
   {
     id: "u15",
+    email: "shiratsuyu@example.com",
     displayName: "白露",
     age: 22,
     region: "東北",

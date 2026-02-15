@@ -8,7 +8,11 @@ interface ProfileFormProps {
   onSave: (profile: UserProfile) => void;
 }
 
+type Mode = "login" | "register" | "edit";
+
 export function ProfileForm({ initial, onSave }: ProfileFormProps) {
+  const [mode, setMode] = useState<Mode>(initial ? "edit" : "login");
+  const [email, setEmail] = useState(initial?.email ?? "");
   const [displayName, setDisplayName] = useState(initial?.displayName ?? "");
   const [age, setAge] = useState(initial?.age?.toString() ?? "");
   const [region, setRegion] = useState(initial?.region ?? "");
@@ -17,9 +21,22 @@ export function ProfileForm({ initial, onSave }: ProfileFormProps) {
   const [tanka2, setTanka2] = useState(initial?.tanka2 ?? "");
   const [errors, setErrors] = useState<string[]>([]);
 
+  const validateEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validateEmail(email)) {
+      setErrors(["有効なメールアドレスを入力してください"]);
+      return;
+    }
+    setErrors([]);
+    setMode("register");
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const errs: string[] = [];
+    if (!validateEmail(email)) errs.push("有効なメールアドレスを入力してください");
     if (!displayName.trim()) errs.push("表示名を入力してください");
     const ageNum = parseInt(age, 10);
     if (isNaN(ageNum) || ageNum < 18 || ageNum > 99)
@@ -35,6 +52,7 @@ export function ProfileForm({ initial, onSave }: ProfileFormProps) {
 
     onSave({
       id: initial?.id ?? crypto.randomUUID(),
+      email: email.trim(),
       displayName: displayName.trim(),
       age: ageNum,
       region,
@@ -44,19 +62,72 @@ export function ProfileForm({ initial, onSave }: ProfileFormProps) {
     });
   };
 
+  if (mode === "login") {
+    return (
+      <form className="profile-form" onSubmit={handleLogin}>
+        <h2 className="form-title">歌縁にログイン</h2>
+        <p className="form-desc">メールアドレスで始めましょう</p>
+
+        {errors.length > 0 && (
+          <div className="form-errors">
+            {errors.map((err, i) => (
+              <p key={i}>{err}</p>
+            ))}
+          </div>
+        )}
+
+        <label className="form-label">
+          メールアドレス
+          <input
+            className="form-input"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="example@mail.com"
+            autoFocus
+          />
+        </label>
+
+        <button className="btn-submit" type="submit">
+          次へ
+        </button>
+
+        <button
+          className="btn-text-link"
+          type="button"
+          onClick={() => { setErrors([]); setMode("register"); }}
+        >
+          アカウントをお持ちでない方はこちら
+        </button>
+      </form>
+    );
+  }
+
   return (
     <form className="profile-form" onSubmit={handleSubmit}>
       <h2 className="form-title">
-        {initial ? "プロフィール編集" : "アカウント登録"}
+        {mode === "edit" ? "プロフィール編集" : "アカウント登録"}
       </h2>
 
       {errors.length > 0 && (
         <div className="form-errors">
-          {errors.map((e, i) => (
-            <p key={i}>{e}</p>
+          {errors.map((err, i) => (
+            <p key={i}>{err}</p>
           ))}
         </div>
       )}
+
+      <label className="form-label">
+        メールアドレス
+        <input
+          className="form-input"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="example@mail.com"
+          disabled={mode === "edit"}
+        />
+      </label>
 
       <label className="form-label">
         表示名
@@ -134,8 +205,18 @@ export function ProfileForm({ initial, onSave }: ProfileFormProps) {
       </label>
 
       <button className="btn-submit" type="submit">
-        {initial ? "保存する" : "登録する"}
+        {mode === "edit" ? "保存する" : "登録する"}
       </button>
+
+      {mode === "register" && (
+        <button
+          className="btn-text-link"
+          type="button"
+          onClick={() => { setErrors([]); setMode("login"); }}
+        >
+          すでにアカウントをお持ちの方
+        </button>
+      )}
     </form>
   );
 }
