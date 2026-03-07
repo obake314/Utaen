@@ -1,43 +1,35 @@
+/* ========== Layout ========== */
+
 .app {
   width: 100%;
+  max-width: 540px;
+  margin: 0 auto;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 1rem;
-  box-sizing: border-box;
+  padding: 0 16px 24px;
 }
 
 .app-header {
   text-align: center;
-  margin-bottom: 0.5rem;
-  width: 100%;
-  max-width: 480px;
+  padding: 20px 0 8px;
+  border-bottom: 1px solid #ddd;
 }
 
-.app-title {
-  font-size: 2.2rem;
+.app-logo {
+  font-family: "Noto Serif JP", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  font-size: 1.6rem;
+  font-weight: 700;
   margin: 0;
-  background: linear-gradient(135deg, #8b5cf6, #d97896);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #222;
+  letter-spacing: 0.15em;
 }
 
-.app-subtitle {
-  color: #999;
-  font-size: 0.8rem;
-  margin: 0.2rem 0 0 0;
-}
+/* ========== Navigation ========== */
 
-/* nav */
 .nav-bar {
   display: flex;
-  gap: 0;
-  width: 100%;
-  max-width: 480px;
-  margin-bottom: 1rem;
-  border-bottom: 1px solid #e5e5e5;
+  border-bottom: 1px solid #ddd;
 }
 
 .nav-btn {
@@ -46,99 +38,586 @@
   border: none;
   border-bottom: 2px solid transparent;
   color: #999;
-  padding: 0.6rem 0;
-  font-size: 0.85rem;
+  padding: 10px 0;
+  font-size: 0.8rem;
   font-family: inherit;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: color 0.15s;
 }
 
 .nav-btn:hover {
-  color: #666;
+  color: #555;
 }
 
 .nav-btn.active {
-  color: #8b5cf6;
-  border-bottom-color: #8b5cf6;
+  color: #222;
+  border-bottom-color: #222;
 }
 
-/* match status bar */
-.match-status-bar {
+/* ========== Main ========== */
+
+.app-main {
+  flex: 1;
+  padding-top: 16px;
+}
+
+/* ========== Auth ========== */
+
+.auth-page {
+  max-width: 360px;
+  margin: 0 auto;
+  padding: 80px 16px 40px;
+  text-align: center;
+}
+
+.auth-logo {
+  font-family: "Noto Serif JP", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #222;
+  margin: 0;
+  letter-spacing: 0.2em;
+}
+
+.auth-tagline {
+  color: #aaa;
+  font-size: 0.8rem;
+  margin: 4px 0 40px;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: left;
+}
+
+.auth-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #222;
+  margin: 0 0 4px;
+  text-align: center;
+}
+
+.auth-error {
+  color: #c33;
+  font-size: 0.8rem;
+  margin: 0;
+  padding: 8px;
+  background: #fef2f2;
+  border: 1px solid #fcc;
+}
+
+/* ========== Shared form elements ========== */
+
+.page-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #222;
+  margin: 0 0 12px;
+}
+
+.page-desc {
+  color: #888;
+  font-size: 0.8rem;
+  margin: -8px 0 12px;
+}
+
+.field-label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: #555;
+  font-size: 0.8rem;
+  margin-bottom: 4px;
+}
+
+.field-input,
+.field-textarea {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 0;
+  padding: 8px 10px;
+  color: #222;
+  font-size: 0.9rem;
+  font-family: inherit;
+  transition: border-color 0.15s;
+}
+
+.field-input:focus,
+.field-textarea:focus {
+  outline: none;
+  border-color: #222;
+}
+
+.field-input:disabled {
+  background: #f2f2f2;
+  color: #999;
+}
+
+.field-textarea {
+  resize: vertical;
+}
+
+.field-narrow {
+  width: 70px;
+}
+
+select.field-input {
+  appearance: none;
+  cursor: pointer;
+}
+
+.radio-group {
+  display: flex;
+  gap: 16px;
+  padding: 4px 0;
+}
+
+.radio-label {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  width: 340px;
-  margin-bottom: 0.5rem;
+  gap: 4px;
+  font-size: 0.85rem;
+  color: #333;
+  cursor: pointer;
 }
 
-.status-text {
-  color: #999;
+.form-errors {
+  background: #fef2f2;
+  border: 1px solid #e8c0c0;
+  padding: 8px 12px;
+}
+
+.form-errors p {
+  margin: 2px 0;
+  color: #b33;
   font-size: 0.8rem;
 }
 
-.status-likes {
-  color: #e74c8b;
+/* ========== Buttons ========== */
+
+.btn-primary {
+  background: #222;
+  color: #fff;
+  border: none;
+  border-radius: 0;
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-primary:hover {
+  background: #444;
+}
+
+.btn-secondary {
+  background: #fff;
+  color: #222;
+  border: 1px solid #ccc;
+  border-radius: 0;
+  padding: 8px 16px;
   font-size: 0.8rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.btn-secondary:hover {
+  border-color: #888;
+}
+
+.btn-small {
+  padding: 5px 12px;
+  font-size: 0.75rem;
+}
+
+.btn-text {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 0.8rem;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 4px 0;
+}
+
+.btn-text:hover {
+  color: #222;
+}
+
+.btn-back {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 0.8rem;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 8px 0;
+  margin-bottom: 8px;
+}
+
+.btn-back::before {
+  content: "< ";
+}
+
+.btn-back:hover {
+  color: #222;
+}
+
+.btn-logout {
+  background: none;
+  border: 1px solid #ccc;
+  border-radius: 0;
+  color: #888;
+  padding: 8px 16px;
+  font-size: 0.8rem;
+  font-family: inherit;
+  cursor: pointer;
+  margin-top: 24px;
+  width: 100%;
+}
+
+.btn-logout:hover {
+  border-color: #c33;
+  color: #c33;
+}
+
+/* ========== Profile form ========== */
+
+.profile-form,
+.tanka-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ========== Tanka theme section ========== */
+
+.theme-section {
+  border-top: 1px solid #ddd;
+  padding-top: 16px;
+  margin-top: 8px;
+}
+
+.theme-title {
+  font-size: 0.9rem;
   font-weight: 600;
-  margin-left: auto;
+  color: #222;
+  margin: 0 0 8px;
 }
 
-.btn-filter-toggle {
-  background: #f0f0f0;
+.theme-month {
+  font-weight: 400;
+  color: #aaa;
+  font-size: 0.75rem;
+  margin-left: 8px;
+}
+
+/* ========== Tanka vertical display (core) ========== */
+
+.tanka-vertical {
+  font-family: "Noto Serif JP", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-size: 1.3rem;
+  line-height: 2.2;
+  letter-spacing: 0.1em;
+  color: #222;
+  margin: 0;
+  padding: 24px 16px;
+  min-height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tanka-display {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  overflow-x: auto;
+}
+
+/* ========== Tanka list / explore ========== */
+
+.tanka-list-page {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.list-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.list-header .page-title {
+  margin: 0;
+  flex: 1;
+}
+
+.quota-badge {
+  font-size: 0.75rem;
+  color: #888;
   border: 1px solid #ddd;
-  color: #666;
-  padding: 0.3rem 0.6rem;
-  border-radius: 6px;
+  padding: 3px 8px;
+}
+
+.filter-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: #fff;
+  border: 1px solid #ddd;
+}
+
+.filter-row {
+  display: flex;
+  gap: 12px;
+}
+
+.age-range {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.range-sep {
+  color: #aaa;
+}
+
+.tanka-entries {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.tanka-entry {
+  border: 1px solid #e0e0e0;
+  background: #fff;
+  position: relative;
+}
+
+.theme-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  color: #8a6d3b;
+  border: 1px solid #c9b88c;
+  padding: 2px 6px;
+  margin: 8px 12px 0;
+  background: #faf6ee;
+}
+
+.entry-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-top: 1px solid #eee;
+}
+
+.author-link {
+  background: none;
+  border: none;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: #222;
+  font-size: 0.85rem;
+}
+
+.author-link:hover {
+  text-decoration: underline;
+}
+
+.author-meta {
+  font-size: 0.7rem;
+  color: #aaa;
+}
+
+.btn-like {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 0;
+  padding: 5px 14px;
   font-size: 0.75rem;
   font-family: inherit;
   cursor: pointer;
-  transition: all 0.2s;
+  color: #222;
+  transition: all 0.15s;
 }
 
-.btn-filter-toggle:hover {
-  background: #e8e8e8;
-  color: #333;
+.btn-like:hover:not(:disabled) {
+  border-color: #c33c5a;
+  color: #c33c5a;
 }
 
-/* main */
-.app-main {
+.btn-like.liked {
+  background: #f5f5f5;
+  border-color: #ddd;
+  color: #aaa;
+  cursor: default;
+}
+
+.btn-like:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.empty-message {
+  color: #aaa;
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 40px 0;
+}
+
+/* ========== Profile view ========== */
+
+.profile-view {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  width: 100%;
-  max-width: 480px;
+  gap: 12px;
 }
 
-/* finished */
-.finished {
-  text-align: center;
-  padding: 3rem 1rem;
+.pv-name {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+  color: #222;
 }
 
-.finished-message {
-  font-size: 1.3rem;
-  color: #333;
-  margin: 0 0 0.5rem 0;
+.pv-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 0.8rem;
+  color: #888;
 }
 
-.finished-count {
+.pv-target {
+  font-size: 0.8rem;
   color: #888;
   margin: 0;
 }
 
-/* misc */
-.btn-link {
-  background: none;
-  border: none;
-  color: #8b5cf6;
-  font-size: 0.85rem;
-  font-family: inherit;
-  cursor: pointer;
-  margin-top: 0.5rem;
-  text-decoration: underline;
+.pv-tanka {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.btn-link:hover {
-  color: #7c3aed;
+.pv-tanka-theme {
+  border-color: #c9b88c;
+}
+
+/* ========== DM ========== */
+
+.dm-list-page {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dm-user-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dm-user-row {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 0;
+  padding: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  margin-bottom: 4px;
+  transition: border-color 0.15s;
+}
+
+.dm-user-row:hover {
+  border-color: #888;
+}
+
+.dm-user-name {
+  font-size: 0.9rem;
+  color: #222;
+}
+
+.dm-user-meta {
+  font-size: 0.75rem;
+  color: #aaa;
+}
+
+.dm-thread {
+  display: flex;
+  flex-direction: column;
+  min-height: 400px;
+}
+
+.dm-partner-name {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 12px;
+  color: #222;
+}
+
+.dm-messages {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 0;
+}
+
+.dm-bubble {
+  max-width: 75%;
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.dm-mine {
+  align-self: flex-end;
+  background: #222;
+  color: #fff;
+}
+
+.dm-theirs {
+  align-self: flex-start;
+  background: #f0f0f0;
+  color: #222;
+}
+
+.dm-input-area {
+  display: flex;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid #ddd;
+  margin-top: auto;
+}
+
+.dm-input {
+  flex: 1;
 }

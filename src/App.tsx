@@ -1,251 +1,192 @@
-import { useState, useEffect, useCallback } from "react";
-import type { UserProfile, DailyState, SearchFilter as FilterType } from "./types";
-import { MAX_LIKES } from "./types";
+import { useState } from "react";
 import {
-  loadProfile,
+  getCurrentAccount,
+  getCurrentProfile,
   saveProfile,
-  loadFilter,
-  saveFilter,
-  loadDailyState,
-  saveDailyState,
-  resetDailyState,
-  addLikedId,
-  getLikedProfiles,
+  getProfile,
+  getCurrentTheme,
+  logout,
 } from "./store";
-import { ProfileForm } from "./components/ProfileForm";
-import { TankaCard } from "./components/TankaCard";
-import { MatchList } from "./components/MatchList";
-import { SearchFilter } from "./components/SearchFilter";
+import type { UserProfile } from "./types";
+import { AuthForm } from "./components/AuthForm";
+import { ProfileEdit } from "./components/ProfileEdit";
+import { TankaEdit } from "./components/TankaEdit";
+import { TankaList } from "./components/TankaList";
+import { ProfileView } from "./components/ProfileView";
+import { DmView } from "./components/DmView";
 import "./App.css";
 
-type Page = "match" | "likes" | "profile";
+type Page =
+  | { type: "auth" }
+  | { type: "profile-setup" }
+  | { type: "tanka-setup" }
+  | { type: "explore" }
+  | { type: "dm" }
+  | { type: "my-profile" }
+  | { type: "my-tanka" }
+  | { type: "view-profile"; userId: string };
 
 function App() {
-  const [profile, setProfile] = useState<UserProfile | null>(loadProfile);
-  const [page, setPage] = useState<Page>(loadProfile() ? "match" : "profile");
-  const [filter, setFilter] = useState<FilterType>(loadFilter);
-  const [showFilter, setShowFilter] = useState(false);
-  const [daily, setDaily] = useState<DailyState | null>(null);
-  const [likedProfiles, setLikedProfiles] = useState<UserProfile[]>(getLikedProfiles);
+  const [page, setPage] = useState<Page>(() => {
+    const account = getCurrentAccount();
+    if (!account) return { type: "auth" };
+    const profile = getCurrentProfile();
+    if (!profile) return { type: "profile-setup" };
+    if (!profile.tanka1) return { type: "tanka-setup" };
+    return { type: "explore" };
+  });
+  const [, setTick] = useState(0);
+  const refresh = () => setTick((t) => t + 1);
 
-  // 日次ステート初期化
-  const initDaily = useCallback(() => {
-    if (!profile) return;
-    const state = loadDailyState(filter, profile.id);
-    setDaily(state);
-  }, [filter, profile]);
+  const account = getCurrentAccount();
+  const profile = getCurrentProfile();
+  const theme = getCurrentTheme();
 
-  useEffect(() => {
-    if (profile) initDaily();
-  }, [profile, initDaily]);
+  const handleAuth = () => {
+    const acc = getCurrentAccount();
+    if (!acc) return;
+    const prof = getCurrentProfile();
+    if (!prof) {
+      setPage({ type: "profile-setup" });
+    } else if (!prof.tanka1) {
+      setPage({ type: "tanka-setup" });
+    } else {
+      setPage({ type: "explore" });
+    }
+    refresh();
+  };
 
-  // --- handlers ---
-
-  const handleSaveProfile = (p: UserProfile) => {
+  const handleProfileSave = (p: UserProfile) => {
     saveProfile(p);
-    setProfile(p);
-    setPage("match");
-  };
-
-  const handleFilterChange = (f: FilterType) => {
-    setFilter(f);
-    saveFilter(f);
-  };
-
-  const handleFilterClose = () => {
-    setShowFilter(false);
-    // フィルタ変更時にデイリーをリセットして再生成
-    resetDailyState();
-    initDaily();
-  };
-
-  const updateDaily = (next: DailyState) => {
-    saveDailyState(next);
-    setDaily(next);
-  };
-
-  const handleLike = () => {
-    if (!daily) return;
-    const idx = getCurrentIdx(daily);
-    if (idx === -1) return;
-
-    const next = { ...daily, candidates: [...daily.candidates] };
-    next.candidates[idx] = { ...next.candidates[idx], status: "like" as const };
-    next.likeCount += 1;
-    next.reviewed += daily.selectionPhase ? 0 : 1;
-
-    addLikedId(next.candidates[idx].profile.id);
-    setLikedProfiles(getLikedProfiles());
-    updateDaily(next);
-  };
-
-  const handleUnlike = () => {
-    if (!daily) return;
-    const idx = getCurrentIdx(daily);
-    if (idx === -1) return;
-
-    const next = { ...daily, candidates: [...daily.candidates] };
-    next.candidates[idx] = { ...next.candidates[idx], status: "unlike" as const };
-    next.reviewed += daily.selectionPhase ? 0 : 1;
-    updateDaily(next);
-  };
-
-  const handlePending = () => {
-    if (!daily) return;
-    const idx = getCurrentIdx(daily);
-    if (idx === -1) return;
-
-    // PENDING はそのまま保留 → reviewed だけ進める
-    const next = { ...daily, candidates: [...daily.candidates] };
-    next.reviewed += 1;
-    updateDaily(next);
-  };
-
-  // --- 現在表示すべきカードのインデックス ---
-  function getCurrentIdx(state: DailyState): number {
-    if (state.selectionPhase) {
-      // PENDING選定フェーズ: まだ pending のものを順に表示
-      return state.candidates.findIndex((c) => c.status === "pending");
+    if (!p.tanka1) {
+      setPage({ type: "tanka-setup" });
+    } else {
+      setPage({ type: "explore" });
     }
-    // 通常フェーズ: reviewed 番目
-    if (state.reviewed < state.candidates.length) {
-      return state.reviewed;
-    }
-    return -1;
+    refresh();
+  };
+
+  const handleTankaSave = (p: UserProfile) => {
+    saveProfile(p);
+    setPage({ type: "explore" });
+    refresh();
+  };
+
+  const handleLogout = () => {
+    logout();
+    setPage({ type: "auth" });
+    refresh();
+  };
+
+  if (page.type === "auth") {
+    return <AuthForm onAuth={handleAuth} />;
   }
 
-  // 全閲覧済みかチェック → PENDING選定フェーズ移行判定
-  useEffect(() => {
-    if (!daily) return;
-    if (daily.selectionPhase) return;
-
-    const allReviewed = daily.reviewed >= daily.candidates.length;
-    if (!allReviewed) return;
-
-    const hasPending = daily.candidates.some((c) => c.status === "pending");
-    const canStillLike = daily.likeCount < MAX_LIKES;
-
-    if (hasPending && canStillLike) {
-      updateDaily({ ...daily, selectionPhase: true });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [daily?.reviewed, daily?.selectionPhase]);
-
-  // --- render ---
-
-  // プロフィール未登録
-  if (!profile || page === "profile") {
+  if (page.type === "profile-setup") {
     return (
       <div className="app">
-        <header className="app-header">
-          <h1 className="app-title">歌縁</h1>
-          <p className="app-subtitle">Utaen - 短歌マッチング</p>
-        </header>
-        <main className="app-main">
-          <ProfileForm initial={profile} onSave={handleSaveProfile} />
-          {profile && (
-            <button className="btn-link" onClick={() => setPage("match")}>
-              戻る
-            </button>
-          )}
-        </main>
+        <ProfileEdit
+          profile={profile}
+          profileId={account!.profileId}
+          email={account!.email}
+          onSave={handleProfileSave}
+        />
       </div>
     );
   }
 
-  const currentIdx = daily ? getCurrentIdx(daily) : -1;
-  const currentCandidate = daily && currentIdx >= 0 ? daily.candidates[currentIdx] : null;
-  const canLike = daily ? daily.likeCount < MAX_LIKES : false;
-  const isFinished = daily ? currentIdx === -1 : false;
+  if (page.type === "tanka-setup") {
+    return (
+      <div className="app">
+        <TankaEdit
+          profile={profile!}
+          theme={theme}
+          onSave={handleTankaSave}
+        />
+      </div>
+    );
+  }
+
+  if (page.type === "view-profile") {
+    const target = getProfile(page.userId);
+    if (!target) {
+      setPage({ type: "explore" });
+      return null;
+    }
+    return (
+      <div className="app">
+        <ProfileView profile={target} onBack={() => setPage({ type: "explore" })} />
+      </div>
+    );
+  }
+
+  const activeTab = page.type;
 
   return (
     <div className="app">
       <header className="app-header">
-        <h1 className="app-title">歌縁</h1>
-        <p className="app-subtitle">Utaen - 短歌マッチング</p>
+        <h1 className="app-logo">歌縁</h1>
       </header>
 
-      {/* ナビゲーション */}
       <nav className="nav-bar">
         <button
-          className={`nav-btn ${page === "match" ? "active" : ""}`}
-          onClick={() => setPage("match")}
+          className={`nav-btn ${activeTab === "explore" ? "active" : ""}`}
+          onClick={() => setPage({ type: "explore" })}
         >
           探す
         </button>
         <button
-          className={`nav-btn ${page === "likes" ? "active" : ""}`}
-          onClick={() => {
-            setLikedProfiles(getLikedProfiles());
-            setPage("likes");
-          }}
+          className={`nav-btn ${activeTab === "dm" ? "active" : ""}`}
+          onClick={() => setPage({ type: "dm" })}
         >
-          LIKE ({likedProfiles.length})
+          DM
         </button>
         <button
-          className="nav-btn"
-          onClick={() => setPage("profile")}
+          className={`nav-btn ${activeTab === "my-tanka" ? "active" : ""}`}
+          onClick={() => setPage({ type: "my-tanka" })}
         >
-          プロフィール
+          短歌
+        </button>
+        <button
+          className={`nav-btn ${activeTab === "my-profile" ? "active" : ""}`}
+          onClick={() => setPage({ type: "my-profile" })}
+        >
+          設定
         </button>
       </nav>
 
       <main className="app-main">
-        {page === "likes" && <MatchList matches={likedProfiles} />}
+        {activeTab === "explore" && (
+          <TankaList
+            myId={profile!.id}
+            onViewProfile={(userId) => setPage({ type: "view-profile", userId })}
+          />
+        )}
 
-        {page === "match" && daily && (
+        {activeTab === "dm" && <DmView myId={profile!.id} />}
+
+        {activeTab === "my-tanka" && (
+          <TankaEdit
+            profile={profile!}
+            theme={theme}
+            onSave={handleTankaSave}
+          />
+        )}
+
+        {activeTab === "my-profile" && (
           <>
-            <div className="match-status-bar">
-              <span className="status-text">
-                {daily.selectionPhase
-                  ? "保留した歌人を選定中"
-                  : `${Math.min(daily.reviewed + 1, daily.candidates.length)} / ${daily.candidates.length}`}
-              </span>
-              <span className="status-likes">
-                LIKE: {daily.likeCount}/{MAX_LIKES}
-              </span>
-              <button
-                className="btn-filter-toggle"
-                onClick={() => setShowFilter(true)}
-              >
-                絞り込み
-              </button>
-            </div>
-
-            {isFinished ? (
-              <div className="finished">
-                <p className="finished-message">本日の歌はすべて見ました</p>
-                <p className="finished-count">
-                  {daily.likeCount} 人の歌人にLIKEしました
-                </p>
-              </div>
-            ) : (
-              currentCandidate && (
-                <TankaCard
-                  key={currentCandidate.profile.id + (daily.selectionPhase ? "-s" : "")}
-                  candidate={currentCandidate}
-                  canLike={canLike}
-                  onLike={handleLike}
-                  onUnlike={handleUnlike}
-                  onPending={
-                    daily.selectionPhase
-                      ? handleUnlike // 選定フェーズではPENDINGの代わりにUNLIKE扱い
-                      : handlePending
-                  }
-                />
-              )
-            )}
+            <ProfileEdit
+              profile={profile}
+              profileId={account!.profileId}
+              email={account!.email}
+              onSave={handleProfileSave}
+            />
+            <button className="btn-logout" onClick={handleLogout}>
+              ログアウト
+            </button>
           </>
         )}
       </main>
-
-      {showFilter && (
-        <SearchFilter
-          filter={filter}
-          onChange={handleFilterChange}
-          onClose={handleFilterClose}
-        />
-      )}
     </div>
   );
 }
