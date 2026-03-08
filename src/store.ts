@@ -16,6 +16,8 @@ const K = {
   CURRENT: "utaen_current_email",
   PROFILES: "utaen_profiles",
   LIKES: "utaen_likes",
+  KEEPS: "utaen_keeps",
+  SOREHODO: "utaen_sorehodo",
   QUOTA: "utaen_quota",
   DMS: "utaen_dms",
   FILTER: "utaen_filter",
@@ -122,6 +124,16 @@ export function saveProfile(profile: UserProfile): void {
   setAllProfiles(all);
 }
 
+// --- version helper ---
+
+function simpleVersion(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) {
+    h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+  }
+  return Math.abs(h);
+}
+
 // --- Tanka entries (built from profiles) ---
 
 export function getAllTankaEntries(): TankaEntry[] {
@@ -132,14 +144,15 @@ export function getAllTankaEntries(): TankaEntry[] {
   for (const p of allProfiles) {
     if (seen.has(p.id)) continue;
     seen.add(p.id);
+    const v = simpleVersion(p.tanka1 + p.tanka2 + (p.tankaTheme ?? ""));
     if (p.tanka1) {
-      entries.push({ id: `${p.id}_1`, userId: p.id, text: p.tanka1, type: "regular1" });
+      entries.push({ id: `${p.id}_1`, userId: p.id, text: p.tanka1, type: "regular1", version: v });
     }
     if (p.tanka2) {
-      entries.push({ id: `${p.id}_2`, userId: p.id, text: p.tanka2, type: "regular2" });
+      entries.push({ id: `${p.id}_2`, userId: p.id, text: p.tanka2, type: "regular2", version: v });
     }
     if (p.tankaTheme) {
-      entries.push({ id: `${p.id}_t`, userId: p.id, text: p.tankaTheme, type: "theme" });
+      entries.push({ id: `${p.id}_t`, userId: p.id, text: p.tankaTheme, type: "theme", version: v });
     }
   }
   return entries;
@@ -265,6 +278,58 @@ export function saveFilter(filter: SearchFilter): void {
 
 export function getCurrentTheme(): MonthlyTheme {
   return { month: thisMonthStr(), title: "春の訪れ" };
+}
+
+// --- Keep ---
+
+interface KeepRecord {
+  tankaId: string;
+}
+
+export function getKeeps(userId: string): KeepRecord[] {
+  return get<KeepRecord[]>(`${K.KEEPS}_${userId}`, []);
+}
+
+export function addKeep(userId: string, tankaId: string): void {
+  const keeps = getKeeps(userId);
+  if (!keeps.some((k) => k.tankaId === tankaId)) {
+    keeps.push({ tankaId });
+    set(`${K.KEEPS}_${userId}`, keeps);
+  }
+}
+
+export function isKept(userId: string, tankaId: string): boolean {
+  return getKeeps(userId).some((k) => k.tankaId === tankaId);
+}
+
+// --- Sorehodo (dismiss) ---
+
+interface SorehodRecord {
+  tankaId: string;
+  version: number;
+}
+
+export function getSorehodos(userId: string): SorehodRecord[] {
+  return get<SorehodRecord[]>(`${K.SOREHODO}_${userId}`, []);
+}
+
+export function addSorehodo(userId: string, tankaId: string, version: number): void {
+  const list = getSorehodos(userId);
+  const idx = list.findIndex((s) => s.tankaId === tankaId);
+  if (idx >= 0) {
+    list[idx].version = version;
+  } else {
+    list.push({ tankaId, version });
+  }
+  set(`${K.SOREHODO}_${userId}`, list);
+}
+
+export function isSorehodo(userId: string, tankaId: string, currentVersion: number): boolean {
+  const list = getSorehodos(userId);
+  const rec = list.find((s) => s.tankaId === tankaId);
+  if (!rec) return false;
+  // 歌が更新されたら再表示
+  return rec.version === currentVersion;
 }
 
 // --- age calculation ---

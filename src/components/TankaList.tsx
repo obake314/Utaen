@@ -11,6 +11,10 @@ import {
   loadFilter,
   saveFilter,
   calcAge,
+  isKept,
+  addKeep,
+  isSorehodo,
+  addSorehodo,
 } from "../store";
 
 interface TankaListProps {
@@ -27,14 +31,17 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-export function TankaList({ myId, onViewProfile }: TankaListProps) {
+export function TankaList({ myId }: TankaListProps) {
   const [filter, setFilter] = useState<FilterT>(loadFilter);
   const [showFilter, setShowFilter] = useState(false);
-  const [likedSet, setLikedSet] = useState<Set<string>>(() => new Set());
+  const [actionMap, setActionMap] = useState<Record<string, "like" | "keep" | "sorehodo">>({});
   const [quota, setQuota] = useState(() => getQuota(myId));
 
   const entries = useMemo(() => {
     let all = getAllTankaEntries().filter((e) => e.userId !== myId);
+
+    // 「それほど」除外（更新された歌は再表示）
+    all = all.filter((e) => !isSorehodo(myId, e.id, e.version));
 
     // apply filter
     all = all.filter((e) => {
@@ -50,14 +57,24 @@ export function TankaList({ myId, onViewProfile }: TankaListProps) {
 
     return shuffle(all);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [myId, filter]);
+  }, [myId, filter, actionMap]);
 
   const handleLike = (entry: TankaEntry) => {
     if (hasLiked(myId, entry.id)) return;
     if (!consumeLike(myId)) return;
     addLike(myId, entry.userId, entry.id);
-    setLikedSet((prev) => new Set(prev).add(entry.id));
+    setActionMap((prev) => ({ ...prev, [entry.id]: "like" }));
     setQuota(getQuota(myId));
+  };
+
+  const handleKeep = (entry: TankaEntry) => {
+    addKeep(myId, entry.id);
+    setActionMap((prev) => ({ ...prev, [entry.id]: "keep" }));
+  };
+
+  const handleSorehodo = (entry: TankaEntry) => {
+    addSorehodo(myId, entry.id, entry.version);
+    setActionMap((prev) => ({ ...prev, [entry.id]: "sorehodo" }));
   };
 
   const handleFilterChange = (next: FilterT) => {
@@ -172,10 +189,9 @@ export function TankaList({ myId, onViewProfile }: TankaListProps) {
       ) : (
         <ul className="tanka-entries">
           {entries.map((entry) => {
-            const author = getProfileForTanka(entry.userId);
-            if (!author) return null;
-            const age = calcAge(author.birthDate);
-            const alreadyLiked = hasLiked(myId, entry.id) || likedSet.has(entry.id);
+            const alreadyLiked = hasLiked(myId, entry.id) || actionMap[entry.id] === "like";
+            const alreadyKept = isKept(myId, entry.id) || actionMap[entry.id] === "keep";
+            const acted = alreadyLiked || alreadyKept || actionMap[entry.id] === "sorehodo";
 
             return (
               <li key={entry.id} className="tanka-entry">
@@ -185,19 +201,24 @@ export function TankaList({ myId, onViewProfile }: TankaListProps) {
                 {entry.type === "theme" && (
                   <span className="theme-badge">月間テーマ</span>
                 )}
-                <div className="entry-footer">
+                <div className="entry-actions">
                   <button
-                    className="author-link"
-                    onClick={() => onViewProfile(entry.userId)}
+                    className={`action-btn action-sorehodo ${actionMap[entry.id] === "sorehodo" ? "acted" : ""}`}
+                    disabled={acted}
+                    onClick={() => handleSorehodo(entry)}
                   >
-                    {author.displayName}
-                    <span className="author-meta">
-                      {GENDER_LABELS[author.gender]} / {age}歳 / {author.prefecture}
-                    </span>
+                    それほど
                   </button>
                   <button
-                    className={`btn-like ${alreadyLiked ? "liked" : ""}`}
-                    disabled={alreadyLiked || quota.remaining <= 0}
+                    className={`action-btn action-keep ${alreadyKept ? "acted" : ""}`}
+                    disabled={acted}
+                    onClick={() => handleKeep(entry)}
+                  >
+                    {alreadyKept ? "キープ済" : "キープ"}
+                  </button>
+                  <button
+                    className={`action-btn action-like ${alreadyLiked ? "acted" : ""}`}
+                    disabled={acted || quota.remaining <= 0}
                     onClick={() => handleLike(entry)}
                   >
                     {alreadyLiked ? "いいね済" : "いいね"}

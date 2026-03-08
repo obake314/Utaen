@@ -26,7 +26,10 @@ export interface TankaEntry {
   userId: string;
   text: string;
   type: "regular1" | "regular2" | "theme";
+  version: number; // 更新検知用
 }
+
+export type TankaAction = "like" | "keep" | "sorehodo";
 
 export interface LikeRecord {
   fromUserId: string;
