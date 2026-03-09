@@ -7,6 +7,12 @@ export interface UserAccount {
 export type Gender = "male" | "female";
 export type SearchTarget = "male" | "female" | "any";
 
+export interface TankaWork {
+  id: string;
+  text: string;
+  createdAt: number;
+}
+
 export interface UserProfile {
   id: string;
   email: string;
@@ -16,9 +22,12 @@ export interface UserProfile {
   prefecture: string;
   areaDetail: string;
   searchTarget: SearchTarget;
-  tanka1: string;
-  tanka2: string;
+  tanka1: string; // 掲示歌1 (後方互換)
+  tanka2: string; // 掲示歌2 (後方互換)
   tankaTheme?: string; // 月間テーマ作品
+  thanksMessage?: string; // マッチ時サンクス文 (200字以内)
+  tankaCollection?: TankaWork[]; // 全作品コレクション
+  displayTankaIds?: [string, string]; // 掲示する2首のID
 }
 
 export interface TankaEntry {
