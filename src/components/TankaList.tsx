@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import type { TankaEntry, SearchFilter as FilterT, Gender, SearchTarget } from "../types";
 import { PREFECTURES, GENDER_LABELS, SEARCH_TARGET_LABELS } from "../types";
 import {
@@ -19,7 +19,6 @@ import {
 
 interface TankaListProps {
   myId: string;
-  onViewProfile: (userId: string) => void;
 }
 
 function shuffle<T>(arr: T[]): T[] {
@@ -34,14 +33,20 @@ function shuffle<T>(arr: T[]): T[] {
 export function TankaList({ myId }: TankaListProps) {
   const [filter, setFilter] = useState<FilterT>(loadFilter);
   const [showFilter, setShowFilter] = useState(false);
-  const [actionMap, setActionMap] = useState<Record<string, "like" | "keep" | "sorehodo">>({});
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [swipeDir, setSwipeDir] = useState<"left" | "right" | "up" | null>(null);
   const [quota, setQuota] = useState(() => getQuota(myId));
+  // Track dismissed entries to trigger re-filter
+  const [dismissed, setDismissed] = useState<Set<string>>(() => new Set());
 
   const entries = useMemo(() => {
     let all = getAllTankaEntries().filter((e) => e.userId !== myId);
 
     // 「それほど」除外（更新された歌は再表示）
     all = all.filter((e) => !isSorehodo(myId, e.id, e.version));
+
+    // already acted
+    all = all.filter((e) => !dismissed.has(e.id) && !hasLiked(myId, e.id) && !isKept(myId, e.id));
 
     // apply filter
     all = all.filter((e) => {
@@ -57,29 +62,56 @@ export function TankaList({ myId }: TankaListProps) {
 
     return shuffle(all);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [myId, filter, actionMap]);
+  }, [myId, filter, dismissed]);
 
-  const handleLike = (entry: TankaEntry) => {
-    if (hasLiked(myId, entry.id)) return;
+  const advanceCard = useCallback(() => {
+    setCurrentIndex((prev) => prev + 1);
+  }, []);
+
+  const animateAndAct = useCallback(
+    (dir: "left" | "right" | "up", action: () => void) => {
+      setSwipeDir(dir);
+      setTimeout(() => {
+        action();
+        setSwipeDir(null);
+        advanceCard();
+      }, 300);
+    },
+    [advanceCard],
+  );
+
+  const entry = entries[currentIndex] as TankaEntry | undefined;
+
+  const handleLike = () => {
+    if (!entry) return;
     if (!consumeLike(myId)) return;
     addLike(myId, entry.userId, entry.id);
-    setActionMap((prev) => ({ ...prev, [entry.id]: "like" }));
     setQuota(getQuota(myId));
+    animateAndAct("right", () => {
+      setDismissed((prev) => new Set(prev).add(entry.id));
+    });
   };
 
-  const handleKeep = (entry: TankaEntry) => {
+  const handleKeep = () => {
+    if (!entry) return;
     addKeep(myId, entry.id);
-    setActionMap((prev) => ({ ...prev, [entry.id]: "keep" }));
+    animateAndAct("up", () => {
+      setDismissed((prev) => new Set(prev).add(entry.id));
+    });
   };
 
-  const handleSorehodo = (entry: TankaEntry) => {
+  const handleSorehodo = () => {
+    if (!entry) return;
     addSorehodo(myId, entry.id, entry.version);
-    setActionMap((prev) => ({ ...prev, [entry.id]: "sorehodo" }));
+    animateAndAct("left", () => {
+      setDismissed((prev) => new Set(prev).add(entry.id));
+    });
   };
 
   const handleFilterChange = (next: FilterT) => {
     setFilter(next);
     saveFilter(next);
+    setCurrentIndex(0);
   };
 
   return (
@@ -184,50 +216,48 @@ export function TankaList({ myId }: TankaListProps) {
         </div>
       )}
 
-      {entries.length === 0 ? (
-        <p className="empty-message">条件に合う短歌がありません</p>
-      ) : (
-        <ul className="tanka-entries">
-          {entries.map((entry) => {
-            const alreadyLiked = hasLiked(myId, entry.id) || actionMap[entry.id] === "like";
-            const alreadyKept = isKept(myId, entry.id) || actionMap[entry.id] === "keep";
-            const acted = alreadyLiked || alreadyKept || actionMap[entry.id] === "sorehodo";
+      <div className="swipe-container">
+        {!entry ? (
+          <div className="swipe-empty">
+            <p className="empty-message">条件に合う短歌がありません</p>
+          </div>
+        ) : (
+          <div
+            className={`swipe-card ${swipeDir ? `swipe-${swipeDir}` : ""}`}
+            key={entry.id}
+          >
+            <div className="tanka-display">
+              <p className="tanka-vertical">{entry.text}</p>
+            </div>
+            {entry.type === "theme" && (
+              <span className="theme-badge">月間テーマ</span>
+            )}
+          </div>
+        )}
+      </div>
 
-            return (
-              <li key={entry.id} className="tanka-entry">
-                <div className="tanka-display">
-                  <p className="tanka-vertical">{entry.text}</p>
-                </div>
-                {entry.type === "theme" && (
-                  <span className="theme-badge">月間テーマ</span>
-                )}
-                <div className="entry-actions">
-                  <button
-                    className={`action-btn action-sorehodo ${actionMap[entry.id] === "sorehodo" ? "acted" : ""}`}
-                    disabled={acted}
-                    onClick={() => handleSorehodo(entry)}
-                  >
-                    それほど
-                  </button>
-                  <button
-                    className={`action-btn action-keep ${alreadyKept ? "acted" : ""}`}
-                    disabled={acted}
-                    onClick={() => handleKeep(entry)}
-                  >
-                    {alreadyKept ? "キープ済" : "キープ"}
-                  </button>
-                  <button
-                    className={`action-btn action-like ${alreadyLiked ? "acted" : ""}`}
-                    disabled={acted || quota.remaining <= 0}
-                    onClick={() => handleLike(entry)}
-                  >
-                    {alreadyLiked ? "いいね済" : "いいね"}
-                  </button>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
+      {entry && !swipeDir && (
+        <div className="swipe-actions">
+          <button
+            className="action-btn action-sorehodo"
+            onClick={handleSorehodo}
+          >
+            それほど
+          </button>
+          <button
+            className="action-btn action-keep"
+            onClick={handleKeep}
+          >
+            キープ
+          </button>
+          <button
+            className="action-btn action-like"
+            disabled={quota.remaining <= 0}
+            onClick={handleLike}
+          >
+            いいね
+          </button>
+        </div>
       )}
     </div>
   );

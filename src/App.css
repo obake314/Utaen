@@ -395,21 +395,6 @@ select.field-input {
   color: #aaa;
 }
 
-.tanka-entries {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.tanka-entry {
-  border: 1px solid #e0e0e0;
-  background: #fff;
-  position: relative;
-}
-
 .theme-badge {
   display: inline-block;
   font-size: 0.65rem;
@@ -420,71 +405,108 @@ select.field-input {
   background: #faf6ee;
 }
 
-.entry-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 12px;
-  border-top: 1px solid #eee;
-}
-
-.author-link {
-  background: none;
-  border: none;
-  font-family: inherit;
-  cursor: pointer;
-  text-align: left;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  color: #222;
-  font-size: 0.85rem;
-}
-
-.author-link:hover {
-  text-decoration: underline;
-}
-
-.author-meta {
-  font-size: 0.7rem;
-  color: #aaa;
-}
-
-.btn-like {
-  background: #fff;
-  border: 1px solid #ccc;
-  border-radius: 0;
-  padding: 5px 14px;
-  font-size: 0.75rem;
-  font-family: inherit;
-  cursor: pointer;
-  color: #222;
-  transition: all 0.15s;
-}
-
-.btn-like:hover:not(:disabled) {
-  border-color: #c33c5a;
-  color: #c33c5a;
-}
-
-.btn-like.liked {
-  background: #f5f5f5;
-  border-color: #ddd;
-  color: #aaa;
-  cursor: default;
-}
-
-.btn-like:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
 .empty-message {
   color: #aaa;
   font-size: 0.85rem;
   text-align: center;
   padding: 40px 0;
+}
+
+/* ========== Swipe card UI ========== */
+
+.swipe-container {
+  position: relative;
+  width: 100%;
+  min-height: 360px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.swipe-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 360px;
+}
+
+.swipe-card {
+  width: 100%;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  position: relative;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.swipe-card.swipe-left {
+  transform: translateX(-120%) rotate(-8deg);
+  opacity: 0;
+}
+
+.swipe-card.swipe-right {
+  transform: translateX(120%) rotate(8deg);
+  opacity: 0;
+}
+
+.swipe-card.swipe-up {
+  transform: translateY(-120%);
+  opacity: 0;
+}
+
+.swipe-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.action-btn {
+  flex: 1;
+  padding: 12px 0;
+  font-size: 0.85rem;
+  font-family: inherit;
+  border: 1px solid #ccc;
+  border-radius: 0;
+  cursor: pointer;
+  background: #fff;
+  color: #222;
+  transition: all 0.15s;
+}
+
+.action-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.action-sorehodo {
+  border-color: #bbb;
+  color: #888;
+}
+
+.action-sorehodo:hover:not(:disabled) {
+  border-color: #888;
+  background: #f5f5f5;
+}
+
+.action-keep {
+  border-color: #c9b88c;
+  color: #8a6d3b;
+}
+
+.action-keep:hover:not(:disabled) {
+  border-color: #a68c4e;
+  background: #faf6ee;
+}
+
+.action-like {
+  border-color: #e8a0b0;
+  color: #c33c5a;
+}
+
+.action-like:hover:not(:disabled) {
+  border-color: #c33c5a;
+  background: #fef2f5;
 }
 
 /* ========== Profile view ========== */

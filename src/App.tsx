@@ -157,10 +157,7 @@ function App() {
 
       <main className="app-main">
         {activeTab === "explore" && (
-          <TankaList
-            myId={profile!.id}
-            onViewProfile={(userId) => setPage({ type: "view-profile", userId })}
-          />
+          <TankaList myId={profile!.id} />
         )}
 
         {activeTab === "dm" && <DmView myId={profile!.id} />}
