@@ -14,6 +14,7 @@ import { TankaEdit } from "./components/TankaEdit";
 import { TankaList } from "./components/TankaList";
 import { ProfileView } from "./components/ProfileView";
 import { DmView } from "./components/DmView";
+import { HistoryView } from "./components/HistoryView";
 import "./App.css";
 
 type Page =
@@ -21,6 +22,7 @@ type Page =
   | { type: "profile-setup" }
   | { type: "tanka-setup" }
   | { type: "explore" }
+  | { type: "history" }
   | { type: "dm" }
   | { type: "my-profile" }
   | { type: "my-tanka" }
@@ -136,6 +138,12 @@ function App() {
           探す
         </button>
         <button
+          className={`nav-btn ${activeTab === "history" ? "active" : ""}`}
+          onClick={() => setPage({ type: "history" })}
+        >
+          履歴
+        </button>
+        <button
           className={`nav-btn ${activeTab === "dm" ? "active" : ""}`}
           onClick={() => setPage({ type: "dm" })}
         >
@@ -159,6 +167,8 @@ function App() {
         {activeTab === "explore" && (
           <TankaList myId={profile!.id} />
         )}
+
+        {activeTab === "history" && <HistoryView myId={profile!.id} />}
 
         {activeTab === "dm" && <DmView myId={profile!.id} />}
 

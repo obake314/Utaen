@@ -2,6 +2,7 @@ import { sampleUsers } from "./data/sampleUsers";
 import type {
   UserAccount,
   UserProfile,
+  TankaWork,
   LikeRecord,
   LikeQuota,
   DmMessage,
@@ -124,6 +125,37 @@ export function saveProfile(profile: UserProfile): void {
   setAllProfiles(all);
 }
 
+// --- Tanka Collection ---
+
+export function getTankaCollection(profile: UserProfile): TankaWork[] {
+  // 後方互換: コレクションが無ければtanka1/tanka2から生成
+  if (profile.tankaCollection && profile.tankaCollection.length > 0) {
+    return profile.tankaCollection;
+  }
+  const works: TankaWork[] = [];
+  if (profile.tanka1) {
+    works.push({ id: `${profile.id}_w1`, text: profile.tanka1, createdAt: Date.now() - 2000 });
+  }
+  if (profile.tanka2) {
+    works.push({ id: `${profile.id}_w2`, text: profile.tanka2, createdAt: Date.now() - 1000 });
+  }
+  return works;
+}
+
+export function getDisplayTankaIds(profile: UserProfile): [string, string] {
+  if (profile.displayTankaIds) return profile.displayTankaIds;
+  const col = getTankaCollection(profile);
+  return [col[0]?.id ?? "", col[1]?.id ?? ""];
+}
+
+export function getDisplayTankaTexts(profile: UserProfile): { tanka1: string; tanka2: string } {
+  const col = getTankaCollection(profile);
+  const ids = getDisplayTankaIds(profile);
+  const t1 = col.find((w) => w.id === ids[0])?.text ?? "";
+  const t2 = col.find((w) => w.id === ids[1])?.text ?? "";
+  return { tanka1: t1, tanka2: t2 };
+}
+
 // --- version helper ---
 
 function simpleVersion(s: string): number {
@@ -144,12 +176,15 @@ export function getAllTankaEntries(): TankaEntry[] {
   for (const p of allProfiles) {
     if (seen.has(p.id)) continue;
     seen.add(p.id);
-    const v = simpleVersion(p.tanka1 + p.tanka2 + (p.tankaTheme ?? ""));
-    if (p.tanka1) {
-      entries.push({ id: `${p.id}_1`, userId: p.id, text: p.tanka1, type: "regular1", version: v });
+
+    const { tanka1, tanka2 } = getDisplayTankaTexts(p);
+    const v = simpleVersion(tanka1 + tanka2 + (p.tankaTheme ?? ""));
+
+    if (tanka1) {
+      entries.push({ id: `${p.id}_1`, userId: p.id, text: tanka1, type: "regular1", version: v });
     }
-    if (p.tanka2) {
-      entries.push({ id: `${p.id}_2`, userId: p.id, text: p.tanka2, type: "regular2", version: v });
+    if (tanka2) {
+      entries.push({ id: `${p.id}_2`, userId: p.id, text: tanka2, type: "regular2", version: v });
     }
     if (p.tankaTheme) {
       entries.push({ id: `${p.id}_t`, userId: p.id, text: p.tankaTheme, type: "theme", version: v });
@@ -180,11 +215,20 @@ export function hasLiked(fromUserId: string, tankaId: string): boolean {
   return getLikes().some((l) => l.fromUserId === fromUserId && l.tankaId === tankaId);
 }
 
+export function hasLikedUser(fromUserId: string, toUserId: string): boolean {
+  return getLikes().some((l) => l.fromUserId === fromUserId && l.toUserId === toUserId);
+}
+
 export function isMatched(userA: string, userB: string): boolean {
   const likes = getLikes();
   const aToB = likes.some((l) => l.fromUserId === userA && l.toUserId === userB);
   const bToA = likes.some((l) => l.fromUserId === userB && l.toUserId === userA);
   return aToB && bToA;
+}
+
+/** いいね直後にマッチが成立したか判定 */
+export function checkNewMatch(fromUserId: string, toUserId: string): boolean {
+  return isMatched(fromUserId, toUserId);
 }
 
 export function getMatchedUserIds(userId: string): string[] {
@@ -196,6 +240,12 @@ export function getMatchedUserIds(userId: string): string[] {
 
 export function getLikedTankaIds(userId: string): string[] {
   return getLikes().filter((l) => l.fromUserId === userId).map((l) => l.tankaId);
+}
+
+/** 自分がいいねした短歌エントリ一覧 */
+export function getLikedEntries(userId: string): TankaEntry[] {
+  const likedIds = new Set(getLikedTankaIds(userId));
+  return getAllTankaEntries().filter((e) => likedIds.has(e.id));
 }
 
 // --- Like Quota ---
@@ -298,8 +348,19 @@ export function addKeep(userId: string, tankaId: string): void {
   }
 }
 
+export function removeKeep(userId: string, tankaId: string): void {
+  const keeps = getKeeps(userId).filter((k) => k.tankaId !== tankaId);
+  set(`${K.KEEPS}_${userId}`, keeps);
+}
+
 export function isKept(userId: string, tankaId: string): boolean {
   return getKeeps(userId).some((k) => k.tankaId === tankaId);
+}
+
+/** キープした短歌エントリ一覧 */
+export function getKeptEntries(userId: string): TankaEntry[] {
+  const keptIds = new Set(getKeeps(userId).map((k) => k.tankaId));
+  return getAllTankaEntries().filter((e) => keptIds.has(e.id));
 }
 
 // --- Sorehodo (dismiss) ---

@@ -16,6 +16,7 @@ export function ProfileEdit({ profile, profileId, email, onSave }: ProfileEditPr
   const [prefecture, setPrefecture] = useState(profile?.prefecture ?? "");
   const [areaDetail, setAreaDetail] = useState(profile?.areaDetail ?? "");
   const [searchTarget, setSearchTarget] = useState<SearchTarget | "">(profile?.searchTarget ?? "");
+  const [thanksMessage, setThanksMessage] = useState(profile?.thanksMessage ?? "");
   const [errors, setErrors] = useState<string[]>([]);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -32,6 +33,11 @@ export function ProfileEdit({ profile, profileId, email, onSave }: ProfileEditPr
       return;
     }
 
+    if (thanksMessage.length > 200) {
+      setErrors(["サンクス文は200文字以内にしてください"]);
+      return;
+    }
+
     onSave({
       id: profileId,
       email,
@@ -44,6 +50,9 @@ export function ProfileEdit({ profile, profileId, email, onSave }: ProfileEditPr
       tanka1: profile?.tanka1 ?? "",
       tanka2: profile?.tanka2 ?? "",
       tankaTheme: profile?.tankaTheme,
+      thanksMessage: thanksMessage.trim() || undefined,
+      tankaCollection: profile?.tankaCollection,
+      displayTankaIds: profile?.displayTankaIds,
     });
   };
 
@@ -144,6 +153,19 @@ export function ProfileEdit({ profile, profileId, email, onSave }: ProfileEditPr
             ),
           )}
         </div>
+      </label>
+
+      <label className="field-label">
+        サンクス文（マッチ時に相手に表示）
+        <textarea
+          className="field-textarea"
+          value={thanksMessage}
+          onChange={(e) => setThanksMessage(e.target.value)}
+          rows={3}
+          maxLength={200}
+          placeholder="マッチングありがとうございます！よろしくお願いします。"
+        />
+        <span className="char-count">{thanksMessage.length}/200</span>
       </label>
 
       <button className="btn-primary" type="submit">

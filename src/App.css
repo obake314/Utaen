@@ -643,3 +643,197 @@ select.field-input {
 .dm-input {
   flex: 1;
 }
+
+/* ========== Modal ========== */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 16px;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 24px;
+  max-width: 400px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-match {
+  text-align: center;
+}
+
+.match-title {
+  font-family: "Noto Serif JP", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  font-size: 1.4rem;
+  color: #c33c5a;
+  margin: 0 0 12px;
+}
+
+.match-partner {
+  font-size: 0.9rem;
+  color: #222;
+  margin: 0 0 16px;
+}
+
+.match-thanks {
+  background: #faf6ee;
+  border: 1px solid #c9b88c;
+  padding: 12px;
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.match-thanks-label {
+  font-size: 0.7rem;
+  color: #8a6d3b;
+  margin: 0 0 4px;
+}
+
+.match-thanks-text {
+  font-size: 0.85rem;
+  color: #222;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.match-info {
+  font-size: 0.8rem;
+  color: #888;
+  margin: 0;
+}
+
+/* ========== Tanka collection (edit) ========== */
+
+.tanka-add-area {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tanka-collection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.section-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #222;
+  margin: 0;
+}
+
+.collection-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.collection-item {
+  border: 1px solid #e0e0e0;
+  background: #fff;
+  padding: 10px 12px;
+}
+
+.collection-item.is-display {
+  border-color: #222;
+}
+
+.collection-text {
+  font-size: 0.85rem;
+  color: #222;
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+
+.collection-controls {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* ========== History ========== */
+
+.history-page {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.history-tabs {
+  display: flex;
+  border-bottom: 1px solid #ddd;
+}
+
+.history-tab {
+  flex: 1;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #999;
+  padding: 8px 0;
+  font-size: 0.8rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.history-tab.active {
+  color: #222;
+  border-bottom-color: #222;
+}
+
+.history-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.history-item {
+  border: 1px solid #e0e0e0;
+  background: #fff;
+}
+
+.history-actions {
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px;
+  border-top: 1px solid #eee;
+  align-items: center;
+}
+
+.liked-label {
+  font-size: 0.75rem;
+  color: #aaa;
+}
+
+.tanka-vertical-small {
+  font-size: 1rem;
+  min-height: 180px;
+  line-height: 2;
+}
+
+/* ========== Char count ========== */
+
+.char-count {
+  font-size: 0.7rem;
+  color: #aaa;
+  text-align: right;
+}

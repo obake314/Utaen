@@ -15,6 +15,8 @@ import {
   addKeep,
   isSorehodo,
   addSorehodo,
+  checkNewMatch,
+  sendDm,
 } from "../store";
 
 interface TankaListProps {
@@ -36,8 +38,8 @@ export function TankaList({ myId }: TankaListProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [swipeDir, setSwipeDir] = useState<"left" | "right" | "up" | null>(null);
   const [quota, setQuota] = useState(() => getQuota(myId));
-  // Track dismissed entries to trigger re-filter
   const [dismissed, setDismissed] = useState<Set<string>>(() => new Set());
+  const [matchModal, setMatchModal] = useState<{ partnerName: string; thanksMessage: string } | null>(null);
 
   const entries = useMemo(() => {
     let all = getAllTankaEntries().filter((e) => e.userId !== myId);
@@ -85,11 +87,31 @@ export function TankaList({ myId }: TankaListProps) {
   const handleLike = () => {
     if (!entry) return;
     if (!consumeLike(myId)) return;
-    addLike(myId, entry.userId, entry.id);
+    const toUserId = entry.userId;
+    addLike(myId, toUserId, entry.id);
     setQuota(getQuota(myId));
-    animateAndAct("right", () => {
-      setDismissed((prev) => new Set(prev).add(entry.id));
-    });
+
+    // マッチ判定
+    const matched = checkNewMatch(myId, toUserId);
+    if (matched) {
+      const partner = getProfileForTanka(toUserId);
+      const thanksMsg = partner?.thanksMessage ?? "";
+      // サンクス文をDMとして送信
+      if (thanksMsg) {
+        sendDm(toUserId, myId, thanksMsg);
+      }
+      animateAndAct("right", () => {
+        setDismissed((prev) => new Set(prev).add(entry.id));
+        setMatchModal({
+          partnerName: partner?.displayName ?? "相手",
+          thanksMessage: thanksMsg,
+        });
+      });
+    } else {
+      animateAndAct("right", () => {
+        setDismissed((prev) => new Set(prev).add(entry.id));
+      });
+    }
   };
 
   const handleKeep = () => {
@@ -257,6 +279,30 @@ export function TankaList({ myId }: TankaListProps) {
           >
             いいね
           </button>
+        </div>
+      )}
+
+      {/* マッチモーダル */}
+      {matchModal && (
+        <div className="modal-overlay" onClick={() => setMatchModal(null)}>
+          <div className="modal-content modal-match" onClick={(e) => e.stopPropagation()}>
+            <h3 className="match-title">マッチしました！</h3>
+            <p className="match-partner">{matchModal.partnerName} さんと相互いいねが成立しました</p>
+            {matchModal.thanksMessage && (
+              <div className="match-thanks">
+                <p className="match-thanks-label">サンクス文</p>
+                <p className="match-thanks-text">{matchModal.thanksMessage}</p>
+              </div>
+            )}
+            <p className="match-info">DMでメッセージを送れるようになりました</p>
+            <button
+              className="btn-primary"
+              onClick={() => setMatchModal(null)}
+              style={{ width: "100%", marginTop: 12 }}
+            >
+              OK
+            </button>
+          </div>
         </div>
       )}
     </div>
