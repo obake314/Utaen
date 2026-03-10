@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { TankaEntry } from "../types";
+import { TankaText } from "./TankaText";
 import {
   getKeptEntries,
   getLikedEntries,
@@ -93,7 +94,7 @@ export function HistoryView({ myId }: HistoryViewProps) {
           {keptEntries.map((entry) => (
             <li key={entry.id} className="history-item">
               <div className="tanka-display">
-                <p className="tanka-vertical tanka-vertical-small">{entry.text}</p>
+                <p className="tanka-vertical tanka-vertical-small"><TankaText text={entry.text} /></p>
               </div>
               {entry.type === "theme" && (
                 <span className="theme-badge">月間テーマ</span>
@@ -132,7 +133,7 @@ export function HistoryView({ myId }: HistoryViewProps) {
           {likedEntries.map((entry) => (
             <li key={entry.id} className="history-item">
               <div className="tanka-display">
-                <p className="tanka-vertical tanka-vertical-small">{entry.text}</p>
+                <p className="tanka-vertical tanka-vertical-small"><TankaText text={entry.text} /></p>
               </div>
               {entry.type === "theme" && (
                 <span className="theme-badge">月間テーマ</span>
