@@ -4,9 +4,10 @@ import { getMatchedUserIds, getProfileForTanka, getDmThread, sendDm } from "../s
 
 interface DmViewProps {
   myId: string;
+  onViewProfile?: (userId: string) => void;
 }
 
-export function DmView({ myId }: DmViewProps) {
+export function DmView({ myId, onViewProfile }: DmViewProps) {
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [text, setText] = useState("");
   const [refreshKey, setRefreshKey] = useState(0);
@@ -33,7 +34,17 @@ export function DmView({ myId }: DmViewProps) {
         <button className="btn-back" onClick={() => setSelectedUser(null)}>
           戻る
         </button>
-        <h3 className="dm-partner-name">{partner?.displayName ?? "不明"}</h3>
+        <div className="dm-thread-header">
+          <h3 className="dm-partner-name">{partner?.displayName ?? "不明"}</h3>
+          {onViewProfile && partner && (
+            <button
+              className="btn-secondary btn-small"
+              onClick={() => onViewProfile(partner.id)}
+            >
+              プロフィール
+            </button>
+          )}
+        </div>
 
         <div className="dm-messages">
           {messages.length === 0 && (

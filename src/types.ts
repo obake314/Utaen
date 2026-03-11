@@ -26,6 +26,7 @@ export interface UserProfile {
   tanka2: string; // 掲示歌2 (後方互換)
   tankaTheme?: string; // 月間テーマ作品
   thanksMessage?: string; // マッチ時サンクス文 (200字以内)
+  notifyMatch?: boolean; // マッチ成立時メール通知 (default true)
   tankaCollection?: TankaWork[]; // 全作品コレクション
   displayTankaIds?: [string, string]; // 掲示する2首のID
 }

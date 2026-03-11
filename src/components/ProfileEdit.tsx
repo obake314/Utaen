@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { UserProfile, Gender, SearchTarget } from "../types";
 import { PREFECTURES, GENDER_LABELS, SEARCH_TARGET_LABELS } from "../types";
+import { calcAge } from "../store";
 
 interface ProfileEditProps {
   profile: UserProfile | null;
@@ -17,6 +18,7 @@ export function ProfileEdit({ profile, profileId, email, onSave }: ProfileEditPr
   const [areaDetail, setAreaDetail] = useState(profile?.areaDetail ?? "");
   const [searchTarget, setSearchTarget] = useState<SearchTarget | "">(profile?.searchTarget ?? "");
   const [thanksMessage, setThanksMessage] = useState(profile?.thanksMessage ?? "");
+  const [notifyMatch, setNotifyMatch] = useState(profile?.notifyMatch !== false);
   const [errors, setErrors] = useState<string[]>([]);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -25,6 +27,7 @@ export function ProfileEdit({ profile, profileId, email, onSave }: ProfileEditPr
     if (!displayName.trim()) errs.push("HNを入力してください");
     if (!gender) errs.push("性別を選択してください");
     if (!birthDate) errs.push("生年月日を入力してください");
+    if (birthDate && calcAge(birthDate) < 18) errs.push("18歳未満の方はご利用いただけません");
     if (!prefecture) errs.push("都道府県を選択してください");
     if (!searchTarget) errs.push("検索対象を選択してください");
 
@@ -51,10 +54,17 @@ export function ProfileEdit({ profile, profileId, email, onSave }: ProfileEditPr
       tanka2: profile?.tanka2 ?? "",
       tankaTheme: profile?.tankaTheme,
       thanksMessage: thanksMessage.trim() || undefined,
+      notifyMatch,
       tankaCollection: profile?.tankaCollection,
       displayTankaIds: profile?.displayTankaIds,
     });
   };
+
+  // 18歳以上の日付上限（今日から18年前）
+  const today = new Date();
+  const minAge18 = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate())
+    .toISOString()
+    .slice(0, 10);
 
   return (
     <form className="profile-form" onSubmit={handleSubmit}>
@@ -106,8 +116,9 @@ export function ProfileEdit({ profile, profileId, email, onSave }: ProfileEditPr
           type="date"
           value={birthDate}
           onChange={(e) => setBirthDate(e.target.value)}
-          max={new Date().toISOString().slice(0, 10)}
+          max={minAge18}
         />
+        <span className="field-hint">18歳以上の方のみご利用いただけます</span>
       </label>
 
       <label className="field-label">
@@ -166,6 +177,18 @@ export function ProfileEdit({ profile, profileId, email, onSave }: ProfileEditPr
           placeholder="マッチングありがとうございます！よろしくお願いします。"
         />
         <span className="char-count">{thanksMessage.length}/200</span>
+      </label>
+
+      <label className="field-label">
+        メール通知
+        <label className="toggle-label">
+          <input
+            type="checkbox"
+            checked={notifyMatch}
+            onChange={(e) => setNotifyMatch(e.target.checked)}
+          />
+          マッチ成立時にメール通知を受け取る
+        </label>
       </label>
 
       <button className="btn-primary" type="submit">

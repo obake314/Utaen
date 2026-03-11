@@ -421,7 +421,9 @@ select.field-input {
 .swipe-container {
   position: relative;
   width: 100%;
-  min-height: 360px;
+  height: calc(100svh - 240px);
+  min-height: 200px;
+  max-height: 480px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -432,15 +434,27 @@ select.field-input {
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: 360px;
+  height: 100%;
 }
 
 .swipe-card {
   width: 100%;
+  height: 100%;
   background: #fff;
   border: 1px solid #e0e0e0;
   position: relative;
+  overflow: hidden;
   transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.swipe-card .tanka-display {
+  height: 100%;
+}
+
+.swipe-card .tanka-vertical {
+  min-height: unset;
+  height: 100%;
+  box-sizing: border-box;
 }
 
 .swipe-card.swipe-left {
@@ -840,4 +854,66 @@ select.field-input {
   font-size: 0.7rem;
   color: #aaa;
   text-align: right;
+}
+
+/* ========== Field hint ========== */
+
+.field-hint {
+  font-size: 0.7rem;
+  color: #aaa;
+}
+
+/* ========== Toggle / checkbox label ========== */
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: #333;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+/* ========== Settings actions ========== */
+
+.settings-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+/* ========== Profile view thanks ========== */
+
+.pv-thanks {
+  background: #faf6ee;
+  border: 1px solid #c9b88c;
+  padding: 12px;
+}
+
+.pv-thanks-label {
+  font-size: 0.7rem;
+  color: #8a6d3b;
+  margin: 0 0 4px;
+}
+
+.pv-thanks-text {
+  font-size: 0.85rem;
+  color: #222;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ========== DM thread header ========== */
+
+.dm-thread-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.dm-thread-header .dm-partner-name {
+  margin: 0;
 }
