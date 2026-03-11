@@ -336,6 +336,10 @@ select.field-input {
   justify-content: center;
 }
 
+.tanka-vertical span {
+  display: block;
+}
+
 .tanka-display {
   background: #fff;
   border: 1px solid #e0e0e0;
