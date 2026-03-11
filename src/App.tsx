@@ -26,7 +26,8 @@ type Page =
   | { type: "dm" }
   | { type: "my-profile" }
   | { type: "my-tanka" }
-  | { type: "view-profile"; userId: string };
+  | { type: "view-profile"; userId: string; from: Page["type"] }
+  | { type: "my-profile-preview" };
 
 function App() {
   const [page, setPage] = useState<Page>(() => {
@@ -111,13 +112,28 @@ function App() {
 
   if (page.type === "view-profile") {
     const target = getProfile(page.userId);
+    const from = page.from;
     if (!target) {
       setPage({ type: "explore" });
       return null;
     }
     return (
       <div className="app">
-        <ProfileView profile={target} onBack={() => setPage({ type: "explore" })} />
+        <ProfileView
+          profile={target}
+          onBack={() => setPage({ type: from } as Page)}
+        />
+      </div>
+    );
+  }
+
+  if (page.type === "my-profile-preview") {
+    return (
+      <div className="app">
+        <ProfileView
+          profile={profile!}
+          onBack={() => setPage({ type: "my-profile" })}
+        />
       </div>
     );
   }
@@ -170,7 +186,14 @@ function App() {
 
         {activeTab === "history" && <HistoryView myId={profile!.id} />}
 
-        {activeTab === "dm" && <DmView myId={profile!.id} />}
+        {activeTab === "dm" && (
+          <DmView
+            myId={profile!.id}
+            onViewProfile={(userId) =>
+              setPage({ type: "view-profile", userId, from: "dm" })
+            }
+          />
+        )}
 
         {activeTab === "my-tanka" && (
           <TankaEdit
@@ -188,9 +211,18 @@ function App() {
               email={account!.email}
               onSave={handleProfileSave}
             />
-            <button className="btn-logout" onClick={handleLogout}>
-              ログアウト
-            </button>
+            <div className="settings-actions">
+              <button
+                className="btn-secondary"
+                onClick={() => setPage({ type: "my-profile-preview" })}
+                style={{ width: "100%" }}
+              >
+                プロフィールプレビュー
+              </button>
+              <button className="btn-logout" onClick={handleLogout}>
+                ログアウト
+              </button>
+            </div>
           </>
         )}
       </main>

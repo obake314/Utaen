@@ -1,6 +1,6 @@
 import type { UserProfile } from "../types";
-import { GENDER_LABELS, SEARCH_TARGET_LABELS } from "../types";
-import { calcAge } from "../store";
+import { GENDER_LABELS } from "../types";
+import { calcAge, getDisplayTankaTexts } from "../store";
 import { TankaText } from "./TankaText";
 
 interface ProfileViewProps {
@@ -10,6 +10,7 @@ interface ProfileViewProps {
 
 export function ProfileView({ profile, onBack }: ProfileViewProps) {
   const age = calcAge(profile.birthDate);
+  const { tanka1, tanka2 } = getDisplayTankaTexts(profile);
 
   return (
     <div className="profile-view">
@@ -24,24 +25,22 @@ export function ProfileView({ profile, onBack }: ProfileViewProps) {
         <span>{profile.prefecture}</span>
         {profile.areaDetail && <span>{profile.areaDetail}</span>}
       </div>
-      <p className="pv-target">
-        検索対象: {SEARCH_TARGET_LABELS[profile.searchTarget]}
-      </p>
 
-      {profile.tanka1 && (
+      {tanka1 && (
         <div className="pv-tanka">
-          <p className="tanka-vertical"><TankaText text={profile.tanka1} /></p>
+          <p className="tanka-vertical"><TankaText text={tanka1} /></p>
         </div>
       )}
-      {profile.tanka2 && (
+      {tanka2 && (
         <div className="pv-tanka">
-          <p className="tanka-vertical"><TankaText text={profile.tanka2} /></p>
+          <p className="tanka-vertical"><TankaText text={tanka2} /></p>
         </div>
       )}
-      {profile.tankaTheme && (
-        <div className="pv-tanka pv-tanka-theme">
-          <span className="theme-badge">月間テーマ</span>
-          <p className="tanka-vertical"><TankaText text={profile.tankaTheme} /></p>
+
+      {profile.thanksMessage && (
+        <div className="pv-thanks">
+          <p className="pv-thanks-label">サンクス文</p>
+          <p className="pv-thanks-text">{profile.thanksMessage}</p>
         </div>
       )}
     </div>
