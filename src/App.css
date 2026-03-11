@@ -331,9 +331,9 @@ select.field-input {
   margin: 0;
   padding: 24px 16px;
   min-height: 280px;
-  display: flex;
+  /* display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: center;　*/
 }
 
 .tanka-vertical span {
