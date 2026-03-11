@@ -1,6 +1,16 @@
 import { useState } from "react";
 import type { UserProfile, MonthlyTheme, TankaWork } from "../types";
 import { getTankaCollection, getDisplayTankaIds } from "../store";
+import { TankaText } from "./TankaText";
+
+const MAX_LINES = 5;
+
+/** 改行数を制限する onChange ハンドラ */
+function clampLines(value: string): string {
+  const lines = value.split("\n");
+  if (lines.length > MAX_LINES) return lines.slice(0, MAX_LINES).join("\n");
+  return value;
+}
 
 interface TankaEditProps {
   profile: UserProfile;
@@ -107,9 +117,9 @@ export function TankaEdit({ profile, theme, onSave }: TankaEditProps) {
           <textarea
             className="field-textarea"
             value={newTanka}
-            onChange={(e) => setNewTanka(e.target.value)}
+            onChange={(e) => setNewTanka(clampLines(e.target.value))}
             rows={3}
-            placeholder="五七五七七"
+            placeholder="五七五七七（最大5行）"
           />
         </label>
         <button type="button" className="btn-secondary" onClick={handleAdd}>
@@ -124,7 +134,7 @@ export function TankaEdit({ profile, theme, onSave }: TankaEditProps) {
           <ul className="collection-list">
             {collection.map((w) => (
               <li key={w.id} className={`collection-item ${displaySet.has(w.id) ? "is-display" : ""}`}>
-                <div className="collection-text">{w.text}</div>
+                <div className="collection-text"><TankaText text={w.text} /></div>
                 <div className="collection-controls">
                   <button
                     type="button"
@@ -167,7 +177,7 @@ export function TankaEdit({ profile, theme, onSave }: TankaEditProps) {
         <div className="modal-overlay" onClick={() => setPreviewText(null)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="tanka-display">
-              <p className="tanka-vertical">{previewText}</p>
+              <p className="tanka-vertical"><TankaText text={previewText} /></p>
             </div>
             <button
               type="button"
@@ -191,9 +201,9 @@ export function TankaEdit({ profile, theme, onSave }: TankaEditProps) {
           <textarea
             className="field-textarea"
             value={tankaTheme}
-            onChange={(e) => setTankaTheme(e.target.value)}
+            onChange={(e) => setTankaTheme(clampLines(e.target.value))}
             rows={3}
-            placeholder={`「${theme.title}」をテーマに`}
+            placeholder={`「${theme.title}」をテーマに（最大5行）`}
           />
         </label>
       </div>

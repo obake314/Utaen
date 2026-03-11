@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback } from "react";
 import type { TankaEntry, SearchFilter as FilterT, Gender, SearchTarget } from "../types";
 import { PREFECTURES, GENDER_LABELS, SEARCH_TARGET_LABELS } from "../types";
+import { TankaText } from "./TankaText";
 import {
   getAllTankaEntries,
   getProfileForTanka,
@@ -249,7 +250,7 @@ export function TankaList({ myId }: TankaListProps) {
             key={entry.id}
           >
             <div className="tanka-display">
-              <p className="tanka-vertical">{entry.text}</p>
+              <p className="tanka-vertical"><TankaText text={entry.text} /></p>
             </div>
             {entry.type === "theme" && (
               <span className="theme-badge">月間テーマ</span>
